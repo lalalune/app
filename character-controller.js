@@ -1399,12 +1399,12 @@ class RemotePlayer extends InterpolatedPlayer {
           localVector.y -= this.avatar.height * 0.5;
           physicsScene.setCharacterControllerPosition(this.characterController, localVector);
           
-          this.avatar.setVelocity(
-            timeDiff / 1000,
-            this.lastPosition,
-            this.positionInterpolant.get(),
-            this.quaternionInterpolant.get()
-            );
+//           this.avatar.setVelocity(
+//             timeDiff / 1000,
+//             this.lastPosition,
+//             this.positionInterpolant.get(),
+//             this.quaternionInterpolant.get()
+//             );
           }
         this.lastPosition.copy(this.position);
       }
