@@ -1492,38 +1492,23 @@ class Avatar {
     }
   }
 
-  setVelocity(timeDiffS, lastPosition, currentPosition, currentQuaternion) {
-    // Set the velocity, which will be considered by the animation controller
-    const positionDiff = localVector.copy(lastPosition)
-      .sub(currentPosition)
+  update(timestamp, timeDiff) {
+    const now = timestamp;
+    const timeDiffS = timeDiff / 1000;
+	  
+    const positionDiff = localVector.copy(this.lastPosition)
+      .sub(this.inputs.hmd.position)
       .divideScalar(Math.max(timeDiffS, 0.001))
-      // .multiplyScalar(0.1);
-    localEuler.setFromQuaternion(currentQuaternion, 'YXZ');
+    localEuler.setFromQuaternion(this.inputs.hmd.quaternion, 'YXZ');
     localEuler.set(0, -(localEuler.y + Math.PI), 0);
     positionDiff.applyEuler(localEuler);
     // this.testVelocity.copy(positionDiff); // For testing only, check if the physics.velocity correct. Can't use this in formal, to calc such as idleWalkFactor/walkRunFactor, will cause aniamtions jitter in low fps.
     // this.testVelocity.y *= -1;
     this.direction.copy(positionDiff).normalize();
-    this.lastPosition.copy(currentPosition);
+    this.lastPosition.copy(this.inputs.hmd.position);
 
     if (this.velocity.length() > maxIdleVelocity) {
-      this.lastMoveTime = performance.now();
-    }
-  }
-
-  update(timestamp, timeDiff) {
-    const now = timestamp;
-    const timeDiffS = timeDiff / 1000;
-    
-    // for the local player we want to update the velocity immediately
-    // on remote players this is called from the RemotePlayer -> observePlayerFn
-    if (this.isLocalPlayer) {
-      this.setVelocity(
-        timeDiffS,
-        this.lastPosition,
-        this.inputs.hmd.position,
-        this.inputs.hmd.quaternion
-      );
+      this.lastMoveTime = now;
     }
 
     const currentSpeed = localVector.set(this.velocity.x, 0, this.velocity.z).length();
